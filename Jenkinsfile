@@ -1,8 +1,7 @@
 pipeline {
-    agent any  // Run on any available agent
-
+    agent any 
     environment {
-        // Define any environment variables needed
+       
         AWS_REGION = "us-east-1"
     }
 
@@ -10,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Cloning repository'
-                git 'https://github.com/ksalunkhegit/devops-exam.git'  // Fetch the latest code
+                git 'https://github.com/ksalunkhegit/devops-exam.git' 
             }
         }
 
@@ -32,7 +31,7 @@ pipeline {
         stage('Invoke Lambda') {
             steps {
                 echo 'Invoking Lambda Function'
-                sh 'aws lambda invoke --function-name myLambdaFunction output.txt'  // Example AWS CLI command
+                sh 'aws lambda invoke --function-name myLambdaFunction output.txt' 
             }
         }
     }
