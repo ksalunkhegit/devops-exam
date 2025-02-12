@@ -1,35 +1,49 @@
-pipeline{
-    agent any
-    stages{
+pipeline {
+    agent any  // Run on any available agent
+
+    environment {
+        // Define any environment variables needed
+        AWS_REGION = "us-east-1"
+    }
+
+    stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ksalunkhegit/devops-exam.git'
-            }
-        stage("TF Init"){
-            steps{
-                echo "Executing Terraform Init"
+                echo 'Cloning repository'
+                git 'https://github.com/ksalunkhegit/devops-exam.git'  // Fetch the latest code
             }
         }
-        stage("TF Validate"){
-            steps{
-                echo "Validating Terraform Code"
+
+        stage('Terraform Plan') {
+            steps {
+                echo 'Running Terraform Plan'
+                sh 'terraform init'
+                sh 'terraform plan'
             }
         }
-        stage("TF Plan"){
-            steps{
-                echo "Executing Terraform Plan"
+
+        stage('Terraform Apply') {
+            steps {
+                echo 'Applying Terraform Changes'
+                sh 'terraform apply -auto-approve'
             }
         }
-        stage("TF Apply"){
-            steps{
-                echo "Executing Terraform Apply"
-            }
-        }
-        stage("Invoke Lambda"){
-            steps{
-                echo "Invoking your AWS Lambda"
+
+        stage('Invoke Lambda') {
+            steps {
+                echo 'Invoking Lambda Function'
+                sh 'aws lambda invoke --function-name myLambdaFunction output.txt'  // Example AWS CLI command
             }
         }
     }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
 }
-}
+
