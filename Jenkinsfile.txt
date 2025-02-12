@@ -1,34 +1,39 @@
-pipeline{
+pipeline {
     agent any
-    stages{ 
+    
+    stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/ksalunkhegit/devops-exam.git'
+                git 'https://github.com/<YourGitHubAccount>/devops-exam.git'
             }
         }
-        stage("TF Init"){
-            steps{
-                echo "Executing Terraform Init"
+
+        stage('Terraform Plan') {
+            steps {
+                script {
+                    // Initialize Terraform
+                    sh 'terraform init'
+                    // Run Terraform plan
+                    sh 'terraform plan'
+                }
             }
         }
-        stage("TF Validate"){
-            steps{
-                echo "Validating Terraform Code"
+
+        stage('Apply Terraform') {
+            steps {
+                script {
+                    // Apply Terraform changes
+                    sh 'terraform apply -auto-approve'
+                }
             }
         }
-        stage("TF Plan"){
-            steps{
-                echo "Executing Terraform Plan"
-            }
-        }
-        stage("TF Apply"){
-            steps{
-                echo "Executing Terraform Apply"
-            }
-        }
-        stage("Invoke Lambda"){
-            steps{
-                echo "Invoking your AWS Lambda"
+
+        stage('Invoke Lambda') {
+            steps {
+                script {
+                    // Use AWS CLI to invoke Lambda
+                    sh 'aws lambda invoke --function-name myLambdaFunction output.txt'
+                }
             }
         }
     }
